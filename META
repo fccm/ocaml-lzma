@@ -1,0 +1,8 @@
+name = "lzma"
+version = "alpha"
+description = "OCaml bindings for the lzma library"
+license = "LGPL + OCaml linking exception"
+requires = ""
+archive(byte) = "lzma.cma"
+archive(native) = "lzma.cmxa"
+linkopts = ""
