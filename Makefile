@@ -49,9 +49,8 @@ lzma.cmxs: lzma.cmxa
 vim:
 	vim lzma.ml lzma_stubs.c
 .PHONY: vim test
-test: test_decode.ml
-	if [ ! -f lzma.cma ]; then if [ ! -f $(SO_PREFIX)/lzma.cmu ]; then $(MAKE) lzma.cma; fi; fi
-	ocaml -I . -I +lzma lzma.cma $<
+test: test_decode.ml lzma.cma
+	ocaml -I . lzma.cma $<
 
 test_decode.byte: test_decode.ml lzma.cma
 	$(OCAMLC) -o $@ -I . lzma.cma $<
