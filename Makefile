@@ -6,12 +6,14 @@
 OCAMLC := ocamlc.opt -g
 OCAMLOPT := ocamlopt.opt -g
 OCAMLMKLIB := ocamlmklib
-LZMA_LIBS := -llzma
+OCAMLDOC := ocamldoc.opt
 OCAML_PATH := $(shell ocamlc -where)
+LZMA_LIBS := -llzma
 LZMA_DIR := lzma
 PREFIX := $(OCAML_PATH)/$(LZMA_DIR)
 SO_PREFIX := $(PREFIX)
 #SO_PREFIX := $(OCAML_PATH)/stublibs/
+DOC_DIR := doc
 
 all: cma cmxa cmxs
 byte cma: lzma.cma
@@ -46,9 +48,12 @@ lzma.cma: lzma.cmo  dlllzma.so
 lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
 
+doc:
+	$(OCAMLDOC) lzma.ml -colorize-code -html -d $(DOC_DIR)
+
 vim:
 	vim lzma.ml lzma_stubs.c
-.PHONY: vim test
+.PHONY: doc vim test
 test: test_decode.ml lzma.cma
 	ocaml -I . lzma.cma $<
 
@@ -84,7 +89,10 @@ uninstall:
 	rm $(PREFIX)/*
 	rmdir $(PREFIX)/
 
-.PHONY: clean
+.PHONY: clean cleandoc
 clean:
 	rm -f *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+cleandoc:
+	rm -f $(DOC_DIR)/*
+	rmdir $(DOC_DIR)
 

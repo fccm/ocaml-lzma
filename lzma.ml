@@ -18,8 +18,12 @@ external new_lzma_stream: unit -> lzma_stream = "new_lzma_stream"
 external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64 = "lzma_stream_total_in_out"
 (** total number of bytes read/written by liblzma *)
 
+(** {3 Initialise for decoding} *)
+
 external lzma_auto_decoder: strm:lzma_stream -> memlimit:int64 -> flags:int32 -> unit = "caml_lzma_auto_decoder"
-(** decode .xz streams and .lzma files with autodetection *)
+(** decode .xz streams and .lzma streams with autodetection *)
+
+(** {3 Initialise for encoding} *)
 
 type lzma_preset =
   | LZMA_PRESET_DEFAULT
@@ -27,7 +31,15 @@ type lzma_preset =
   | LZMA_PRESET_TEXT
 
 external lzma_easy_encoder: strm:lzma_stream -> level:int -> preset:lzma_preset list -> unit = "caml_lzma_easy_encoder"
-(** initialize .xz stream encoder *)
+(** initialise .xz stream encoder *)
+
+type lzma_options
+external new_lzma_options: unit -> lzma_options = "new_lzma_options_lzma"
+external lzma_preset: options:lzma_options -> level:int -> preset_extreme:bool -> unit = "caml_lzma_lzma_preset"
+external lzma_alone_encoder: strm:lzma_stream -> options:lzma_options -> unit = "caml_lzma_alone_encoder"
+(** initialise .lzma stream encoder *)
+
+(** {3 Running encoding/decoding} *)
 
 type lzma_action =
   | LZMA_RUN
@@ -42,11 +54,8 @@ external lzma_code: strm:lzma_stream -> action:lzma_action ->
     "caml_lzma_code_native"
 (** returns (avail_in, avail_out) *)
 
+(** {3 Ending} *)
+
 (* XXX maybe lzma_end could be a finaliser of the lzma_stream value, TODO investigate *)
 external lzma_end: strm:lzma_stream -> unit = "caml_lzma_end"
-
-type lzma_options
-external new_lzma_options: unit -> lzma_options = "new_lzma_options_lzma"
-external lzma_preset: options:lzma_options -> level:int -> preset_extreme:bool -> unit = "caml_lzma_lzma_preset"
-external lzma_alone_encoder: strm:lzma_stream -> options:lzma_options -> unit = "caml_lzma_alone_encoder"
 
