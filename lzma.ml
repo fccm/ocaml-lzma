@@ -109,5 +109,22 @@ external lzma_stream_buffer_decode: memlimit:int64 ->
   int * int
   = "caml_lzma_stream_buffer_decode_bytecode"
     "caml_lzma_stream_buffer_decode_native"
-(** single-call .xz stream decoder *)
+(** single-call .xz stream decoder
+    returns (in_pos, out_pos) *)
+
+
+(** {3 Version} *)
+
+type stability =
+  | Alpha
+  | Beta
+  | Stable
+
+type version_kind =
+  | Run_time
+  | Compile_time
+
+external lzma_version_number: version_kind -> int * int * int * stability = "caml_lzma_version_number"
+
+external lzma_version_string: version_kind -> string = "caml_lzma_version_string"
 

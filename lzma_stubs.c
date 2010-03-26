@@ -285,3 +285,46 @@ CAMLprim value caml_lzma_stream_buffer_decode_bytecode(value * argv, int argn) {
                                                  argv[3], argv[4], argv[5]);
 }
 
+CAMLprim value caml_lzma_version_number(value kind)
+{
+    CAMLparam1(kind);
+    CAMLlocal1(ret);
+    ret = caml_alloc(4, 0);
+    if (kind == Val_int(0))
+    {   /* run-time version */
+        uint32_t v, major, minor, patch, stability;
+        v = lzma_version_number();
+        major = v / 10000000;
+        minor = (v / 10000) - (major * 1000);
+        patch = (v / 10) - (major * 1000000) - (minor * 1000);
+        stability = v - (major * 10000000) - (minor * 10000) - (patch * 10);
+        Store_field(ret, 0, Val_int(major) );
+        Store_field(ret, 1, Val_int(minor) );
+        Store_field(ret, 2, Val_int(patch) );
+        Store_field(ret, 3, Val_int(stability) );
+    }
+    else
+    {   /* compile-time version */
+        Store_field(ret, 0, Val_int(LZMA_VERSION_MAJOR) );
+        Store_field(ret, 1, Val_int(LZMA_VERSION_MINOR) );
+        Store_field(ret, 2, Val_int(LZMA_VERSION_PATCH) );
+        Store_field(ret, 3, Val_int(LZMA_VERSION_STABILITY) );
+    }
+    CAMLreturn(ret);
+}
+
+CAMLprim value caml_lzma_version_string(value kind)
+{
+    CAMLparam1(kind);
+    CAMLlocal1(ret);
+    if (kind == Val_int(0))
+    {   /* run-time version */
+        ret = caml_copy_string(lzma_version_string());
+    }
+    else
+    {   /* compile-time version */
+        ret = caml_copy_string(LZMA_VERSION_STRING);
+    }
+    CAMLreturn(ret);
+}
+
