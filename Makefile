@@ -49,6 +49,7 @@ lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
 
 doc:
+	mkdir -p $(DOC_DIR)
 	$(OCAMLDOC) lzma.ml -colorize-code -html -d $(DOC_DIR)
 
 vim:
