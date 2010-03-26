@@ -30,7 +30,27 @@ type lzma_preset =
   | LZMA_PRESET_EXTREME
   | LZMA_PRESET_TEXT
 
-external lzma_easy_encoder: strm:lzma_stream -> level:int -> preset:lzma_preset list -> unit = "caml_lzma_easy_encoder"
+
+(** Type of the integrity check (Check ID)
+  
+   The .xz format supports multiple types of checks that are calculated from
+   the uncompressed data. They vary in both speed and ability to detect errors.
+*)
+type lzma_check =
+  | LZMA_CHECK_NONE
+    (** No Check is calculated. (size of the Check field: 0 bytes) *)
+  | LZMA_CHECK_CRC32
+    (** CRC32 using the polynomial from the IEEE 802.3 standard
+        (Size of the Check field: 4 bytes) *)
+  | LZMA_CHECK_CRC64
+    (** CRC64 using the polynomial from the ECMA-182 standard
+        (Size of the Check field: 8 bytes) *)
+  | LZMA_CHECK_SHA256
+    (** SHA-256 (Size of the Check field: 32 bytes) *)
+
+
+external lzma_easy_encoder: strm:lzma_stream -> level:int -> preset:lzma_preset list ->
+  check:lzma_check -> unit = "caml_lzma_easy_encoder"
 (** initialise .xz stream encoder *)
 
 type lzma_options

@@ -144,6 +144,14 @@ CAMLprim value caml_lzma_auto_decoder(value strm, value memlimit, value ml_flags
     return Val_unit;
 }
 
+static const lzma_check lzma_check_table[] = {
+    LZMA_CHECK_NONE,
+    LZMA_CHECK_CRC32,
+    LZMA_CHECK_CRC64,
+    LZMA_CHECK_SHA256
+};
+#define Lzma_check_val(v) (lzma_check_table[Long_val((v))])
+
 static const uint32_t lzma_preset_table[] = {
     LZMA_PRESET_DEFAULT,
     LZMA_PRESET_EXTREME,
@@ -159,10 +167,10 @@ Lzma_preset_val(value mask_list) {
     }
     return c_mask;
 }
-CAMLprim value caml_lzma_easy_encoder(value strm, value level, value preset/*, value check*/)
+CAMLprim value caml_lzma_easy_encoder(value strm, value level, value preset, value check)
 {
-    lzma_check check = LZMA_CHECK_CRC32;
-    lzma_ret st = lzma_easy_encoder(Lzma_stream_val(strm), Long_val(level) | Lzma_preset_val(preset), check);
+    lzma_ret st = lzma_easy_encoder(Lzma_stream_val(strm),
+            Long_val(level) | Lzma_preset_val(preset), Lzma_check_val(check));
     lzma_status_check(st, lzma_easy_encoder)
     return Val_unit;
 }
