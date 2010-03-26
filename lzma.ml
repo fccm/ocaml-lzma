@@ -5,8 +5,8 @@
    License, with the special exception on linking described in file LICENSE.txt
 *)
 
-(* You can get more documentation reading the comments in the files
-   /usr/include/lzma/*.h
+(** You can get more documentation reading the comments in the files
+    /usr/include/lzma/*.h
 *)
 
 exception EOF of int
