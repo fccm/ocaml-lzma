@@ -36,14 +36,14 @@ lzma.cmo: lzma.ml lzma.cmi
 lzma_stubs.o: lzma_stubs.c
 	$(OCAMLC) -c $<
 
-dlllzma.so liblzma_stubs.a: lzma_stubs.o
+dlllzma_stubs.so liblzma_stubs.a: lzma_stubs.o
 	$(OCAMLMKLIB) -oc lzma_stubs $< $(LZMA_LIBS)
 
-lzma.cmxa lzma.a: lzma.cmx dlllzma.so
-	$(OCAMLMKLIB) -o lzma $< $(LZMA_LIBS) #-llzma_stubs
+lzma.cmxa lzma.a: lzma.cmx dlllzma_stubs.so
+	$(OCAMLMKLIB) -o lzma $< -L. $(LZMA_LIBS) -ccopt -llzma_stubs
 
-lzma.cma: lzma.cmo  dlllzma.so
-	$(OCAMLC) -a -o $@ $< -cclib $(LZMA_LIBS) -dllib dlllzma_stubs.so
+lzma.cma: lzma.cmo  dlllzma_stubs.so
+	$(OCAMLC) -a -o $@ -custom -dllib -llzma_stubs $<
 
 lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
@@ -53,15 +53,19 @@ doc:
 
 vim:
 	vim lzma.ml lzma_stubs.c
-.PHONY: doc vim test
+.PHONY: doc vim test test_opt
+
 test: test_decode.ml lzma.cma
 	ocaml -I . lzma.cma $<
+
+test_opt: test_decode.opt
+	./$<
 
 test_decode.byte: test_decode.ml lzma.cma
 	$(OCAMLC) -o $@ -I . lzma.cma $<
 
 test_decode.opt: test_decode.ml lzma.cmxa
-	$(OCAMLOPT) -o $@ -I . lzma.cmxa -ccopt -llzma_stubs $<
+	$(OCAMLOPT) -o $@ -I . lzma.cmxa $<
 
 DIST_FILES=           \
     liblzma_stubs.a   \
@@ -89,9 +93,11 @@ uninstall:
 	rm $(PREFIX)/*
 	rmdir $(PREFIX)/
 
-.PHONY: clean cleandoc
+.PHONY: clean cleanmli cleandoc
 clean:
 	rm -f *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+cleanmli:
+	rm -f lzma.mli
 cleandoc:
 	rm -f $(DOC_DIR)/*
 	rmdir $(DOC_DIR)
