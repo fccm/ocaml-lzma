@@ -17,7 +17,7 @@ let () =
   let data = load_file filename in
   let data_len = String.length data in
   let strm = new_lzma_stream() in
-  lzma_auto_decoder ~strm ~flags:0l ~memlimit:536_870_912L;  (* 512 * 1024 * 1024 *)
+  lzma_auto_decoder ~strm ~check:LZMA_CHECK_NONE ~memlimit:536_870_912L;  (* 512 * 1024 * 1024 *)
   let buf = String.create buf_len in
   let ofs = ref 0 in
   begin

@@ -43,24 +43,27 @@ lzma.cmxa lzma.a: lzma.cmx dlllzma_stubs.so
 	$(OCAMLMKLIB) -o lzma $< -L. $(LZMA_LIBS) -ccopt -llzma_stubs
 
 lzma.cma: lzma.cmo  dlllzma_stubs.so
-	$(OCAMLC) -a -o $@ -custom -dllib -llzma_stubs $<
+	$(OCAMLC) -a -o $@ -ccopt $(LZMA_LIBS) -dllib -llzma_stubs $<
 
 lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
 
-doc:
+doc: lzma.ml lzma.cmi
 	mkdir -p $(DOC_DIR)
 	$(OCAMLDOC) lzma.ml -colorize-code -html -d $(DOC_DIR)
 
 vim:
 	vim lzma.ml lzma_stubs.c
-.PHONY: doc vim test test_opt
+.PHONY: doc vim test test_opt test_byte
 
 test: test_decode.ml lzma.cma
 	ocaml -I . lzma.cma $<
 
 test_opt: test_decode.opt
 	./$<
+
+test_byte: test_decode.byte
+	ocamlrun -I . $<
 
 test_decode.byte: test_decode.ml lzma.cma
 	$(OCAMLC) -o $@ -I . lzma.cma $<

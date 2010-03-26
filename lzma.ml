@@ -26,23 +26,10 @@ external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64 = "lzma_str
 (** total number of bytes read/written by liblzma *)
 
 
-(** {3 Initialise for decoding} *)
-
-external lzma_auto_decoder: strm:lzma_stream -> memlimit:int64 -> flags:int32 -> unit = "caml_lzma_auto_decoder"
-(** decode .xz streams and .lzma streams with autodetection *)
-
-(** {3 Initialise for encoding} *)
-
-type lzma_preset =
-  | LZMA_PRESET_DEFAULT
-  | LZMA_PRESET_EXTREME
-  | LZMA_PRESET_TEXT
-
-
-(** Type of the integrity check (Check ID)
+(** {3 Type of the integrity check (Check ID)} *)
   
-   The .xz format supports multiple types of checks that are calculated from
-   the uncompressed data. They vary in both speed and ability to detect errors.
+(** The .xz format supports multiple types of checks that are calculated from
+    the uncompressed data. They vary in both speed and ability to detect errors.
 *)
 type lzma_check =
   | LZMA_CHECK_NONE
@@ -56,6 +43,19 @@ type lzma_check =
   | LZMA_CHECK_SHA256
     (** SHA-256 (Size of the Check field: 32 bytes) *)
 
+
+(** {3 Initialise for decoding} *)
+
+external lzma_auto_decoder: strm:lzma_stream -> memlimit:int64 ->
+  check:lzma_check -> unit = "caml_lzma_auto_decoder"
+(** decode .xz streams and .lzma streams with autodetection *)
+
+(** {3 Initialise for encoding} *)
+
+type lzma_preset =
+  | LZMA_PRESET_DEFAULT
+  | LZMA_PRESET_EXTREME
+  | LZMA_PRESET_TEXT
 
 external lzma_easy_encoder: strm:lzma_stream -> level:int -> preset:lzma_preset list ->
   check:lzma_check -> unit = "caml_lzma_easy_encoder"
