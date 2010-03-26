@@ -5,6 +5,10 @@
    License, with the special exception on linking described in file LICENSE.txt
 *)
 
+(* You can get more documentation reading the comments in the files
+   /usr/include/lzma/*.h
+*)
+
 exception EOF of int
 
 let init() =
@@ -17,6 +21,7 @@ external new_lzma_stream: unit -> lzma_stream = "new_lzma_stream"
 
 external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64 = "lzma_stream_total_in_out"
 (** total number of bytes read/written by liblzma *)
+
 
 (** {3 Initialise for decoding} *)
 
@@ -59,6 +64,7 @@ external lzma_preset: options:lzma_options -> level:int -> preset_extreme:bool -
 external lzma_alone_encoder: strm:lzma_stream -> options:lzma_options -> unit = "caml_lzma_alone_encoder"
 (** initialise .lzma stream encoder *)
 
+
 (** {3 Running encoding/decoding} *)
 
 type lzma_action =
@@ -78,4 +84,30 @@ external lzma_code: strm:lzma_stream -> action:lzma_action ->
 
 (* XXX maybe lzma_end could be a finaliser of the lzma_stream value, TODO investigate *)
 external lzma_end: strm:lzma_stream -> unit = "caml_lzma_end"
+
+
+(** {3 Single-call} *)
+
+external lzma_stream_buffer_bound: uncompressed_size:int -> int = "caml_lzma_stream_buffer_bound"
+(** Calculate output buffer size for single-call Stream encoder *)
+
+external lzma_easy_buffer_encode:
+  level:int -> preset:lzma_preset list -> check:lzma_check ->
+  data:string -> buf:string -> ofs:int -> int
+  = "caml_lzma_easy_buffer_encode_bytecode"
+    "caml_lzma_easy_buffer_encode_native"
+(** single-call .xz stream encoding *)
+
+type decoder_flags =
+  | LZMA_TELL_NO_CHECK
+  | LZMA_TELL_UNSUPPORTED_CHECK
+  | LZMA_CONCATENATED
+
+external lzma_stream_buffer_decode: memlimit:int64 ->
+  flags:decoder_flags list -> data:string -> data_ofs:int ->
+  buf:string -> buf_ofs:int ->
+  int * int
+  = "caml_lzma_stream_buffer_decode_bytecode"
+    "caml_lzma_stream_buffer_decode_native"
+(** single-call .xz stream decoder *)
 

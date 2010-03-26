@@ -83,7 +83,7 @@ CAMLprim value lzma_stream_total_in_out(value strm)
         case LZMA_FORMAT_ERROR:     caml_failwith(#func_name ": format error"); \
         case LZMA_OPTIONS_ERROR:    caml_failwith(#func_name ": options error"); \
         case LZMA_DATA_ERROR:       caml_failwith(#func_name ": data error"); \
-        case LZMA_BUF_ERROR:        caml_failwith(#func_name ": buf error"); \
+        case LZMA_BUF_ERROR:        caml_failwith(#func_name ": buffer error"); \
         case LZMA_PROG_ERROR:       caml_failwith(#func_name ": prog error"); \
         case LZMA_OK: break; \
         } \
@@ -140,6 +140,7 @@ CAMLprim value caml_lzma_auto_decoder(value strm, value memlimit, value ml_flags
     if (st != LZMA_OK) {
         if (st == LZMA_MEM_ERROR) caml_failwith("lzma_auto_decoder: cannot allocate memory");
         if (st == LZMA_OPTIONS_ERROR) caml_failwith("lzma_auto_decoder: unsupported flags");
+        caml_failwith("lzma_auto_decoder");
     }
     return Val_unit;
 }
@@ -189,5 +190,98 @@ CAMLprim value caml_lzma_alone_encoder(value strm, value options)
             Lzma_stream_val(strm), Lzma_options_lzma_val(options));
     lzma_status_check(st, lzma_alone_encoder)
     return Val_unit;
+}
+
+CAMLprim value caml_lzma_stream_buffer_bound(value uncompressed_size) {
+    return Val_long(lzma_stream_buffer_bound(Long_val(uncompressed_size)));
+}
+
+CAMLprim value caml_lzma_easy_buffer_encode_native(
+        value level,
+	value preset,
+	value check,
+	value in,
+	value out,
+	value ml_out_pos)
+{
+    size_t out_pos = Long_val(ml_out_pos);
+    lzma_ret st = lzma_easy_buffer_encode(
+            Long_val(level) | Lzma_preset_val(preset), Lzma_check_val(check),
+            NULL, Conv_string(in), caml_string_length(in),
+            Conv_string(out), &out_pos, caml_string_length(out));
+    if (st != LZMA_OK) {
+        if (st == LZMA_BUF_ERROR) caml_failwith("lzma_easy_buffer_encode: not enough output buffer space");
+        if (st == LZMA_OPTIONS_ERROR) caml_failwith("lzma_easy_buffer_encode: options error");
+        if (st == LZMA_MEM_ERROR) caml_failwith("lzma_easy_buffer_encode: mem error");
+        if (st == LZMA_DATA_ERROR) caml_failwith("lzma_easy_buffer_encode: data error");
+        if (st == LZMA_PROG_ERROR) caml_failwith("lzma_easy_buffer_encode: prog error");
+        caml_failwith("lzma_easy_buffer_encode");
+    }
+    return Val_long(out_pos);
+}
+CAMLprim value caml_lzma_easy_buffer_encode_bytecode(value * argv, int argn) {
+    return caml_lzma_easy_buffer_encode_native(argv[0], argv[1], argv[2],
+                                               argv[3], argv[4], argv[5]);
+}
+
+static const uint32_t decoder_flags_table[] = {
+    LZMA_TELL_NO_CHECK,
+    LZMA_TELL_UNSUPPORTED_CHECK,
+    LZMA_CONCATENATED
+};
+static inline uint32_t
+Decoder_flags_val(value mask_list) {
+    uint32_t c_mask = 0; 
+    while (mask_list != Val_emptylist) {
+        value head = Field(mask_list, 0);
+        c_mask |= decoder_flags_table[Long_val(head)];
+        mask_list = Field(mask_list, 1);
+    }
+    return c_mask;
+}
+
+CAMLprim value caml_lzma_stream_buffer_decode_native(
+        value ml_memlimit,
+	value flags,
+	value in,
+        value ml_in_pos,
+	value out,
+	value ml_out_pos)
+{
+    CAMLparam5(ml_memlimit, flags, in, ml_in_pos, out);
+    CAMLxparam1(ml_out_pos);
+    CAMLlocal1(ret);
+    uint64_t memlimit = Int64_val(ml_memlimit);
+    size_t in_pos = Long_val(ml_in_pos);
+    size_t out_pos = Long_val(ml_out_pos);
+    lzma_ret st = lzma_stream_buffer_decode(
+            &memlimit, Decoder_flags_val(flags), NULL,
+            Conv_string(in), &in_pos, caml_string_length(in),
+            Conv_string(out), &out_pos, caml_string_length(out));
+    if (st != LZMA_OK) {
+        switch (st) {
+        case LZMA_FORMAT_ERROR: caml_failwith("lzma_stream_buffer_decode: format error");
+        case LZMA_OPTIONS_ERROR: caml_failwith("lzma_stream_buffer_decode: options error");
+        case LZMA_DATA_ERROR: caml_failwith("lzma_stream_buffer_decode: data error");
+        case LZMA_NO_CHECK: caml_failwith("lzma_stream_buffer_decode: no check");
+        case LZMA_UNSUPPORTED_CHECK: caml_failwith("lzma_stream_buffer_decode: unsupported check");
+        case LZMA_MEM_ERROR: caml_failwith("lzma_stream_buffer_decode: mem error");
+	case LZMA_MEMLIMIT_ERROR: caml_failwith("lzma_stream_buffer_decode: error, memory usage limit was reached");
+        case LZMA_BUF_ERROR: caml_failwith("lzma_stream_buffer_decode: output buffer was too small");
+        case LZMA_PROG_ERROR: caml_failwith("lzma_stream_buffer_decode: prog error");
+        case LZMA_STREAM_END:
+        case LZMA_GET_CHECK: caml_failwith("lzma_stream_buffer_decode");
+        case LZMA_OK:
+        break;
+        }
+    }
+    ret = caml_alloc(2, 0);
+    Store_field(ret, 0, Val_long(in_pos));
+    Store_field(ret, 1, Val_long(out_pos));
+    CAMLreturn(ret);
+}
+CAMLprim value caml_lzma_stream_buffer_decode_bytecode(value * argv, int argn) {
+    return caml_lzma_stream_buffer_decode_native(argv[0], argv[1], argv[2],
+                                                 argv[3], argv[4], argv[5]);
 }
 
