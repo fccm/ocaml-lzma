@@ -73,7 +73,7 @@ CAMLprim value lzma_stream_total_in_out(value strm)
     if (st != LZMA_OK) { \
         switch (st) { \
         case LZMA_STREAM_END:       /*caml_raise_end_of_file();*/ \
-                                    caml_raise_with_arg(*caml_named_value("lzma_eof"), \
+                                    caml_raise_with_arg(*caml_named_value("exn_lzma_eof"), \
                                            Val_long(Lzma_stream_val(strm)->avail_out)); \
         case LZMA_NO_CHECK:         caml_failwith(#func_name ": no check"); \
         case LZMA_UNSUPPORTED_CHECK:caml_failwith(#func_name ": unsupported check"); \
@@ -266,7 +266,8 @@ CAMLprim value caml_lzma_stream_buffer_decode_native(
         case LZMA_NO_CHECK: caml_failwith("lzma_stream_buffer_decode: no check");
         case LZMA_UNSUPPORTED_CHECK: caml_failwith("lzma_stream_buffer_decode: unsupported check");
         case LZMA_MEM_ERROR: caml_failwith("lzma_stream_buffer_decode: mem error");
-	case LZMA_MEMLIMIT_ERROR: caml_failwith("lzma_stream_buffer_decode: error, memory usage limit was reached");
+	case LZMA_MEMLIMIT_ERROR: caml_raise_with_arg(*caml_named_value("exn_lzma_memlimit"),
+                                                       caml_copy_int64(memlimit));
         case LZMA_BUF_ERROR: caml_failwith("lzma_stream_buffer_decode: output buffer was too small");
         case LZMA_PROG_ERROR: caml_failwith("lzma_stream_buffer_decode: prog error");
         case LZMA_STREAM_END:

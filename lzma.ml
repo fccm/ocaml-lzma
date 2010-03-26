@@ -10,9 +10,12 @@
 *)
 
 exception EOF of int
+exception MEM_LIMIT of int64
+(** memory usage limit was reached, the minimum required mem-limit value is returned *)
 
 let init() =
-  Callback.register_exception "lzma_eof" (EOF 0);
+  Callback.register_exception "exn_lzma_eof" (EOF 0);
+  Callback.register_exception "exn_lzma_memlimit" (MEM_LIMIT 0L);
 ;;
 let () = init() ;;
 

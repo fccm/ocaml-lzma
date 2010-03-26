@@ -29,7 +29,9 @@ let () =
   ] in
   let buf = String.create data_len in
   let in_pos, out_pos =
-    lzma_stream_buffer_decode ~memlimit:268435456L  (* 256 Mo *)
+    (* if the memory usage limit is reached, the minimum required
+       memlimit value is returned with the exception MEM_LIMIT *)
+    lzma_stream_buffer_decode ~memlimit:536870912L  (* 512 Mo *)
         ~flags ~data:compressed ~data_ofs:0
         ~buf ~buf_ofs:0
   in
