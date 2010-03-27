@@ -8,7 +8,7 @@ let load_file f =
   close_in ic;
   (s)
 
-let filename = "./lzma_test.txt"
+let filename = "./test_data.txt"
 
 let buf_len = Sys.max_string_length
 

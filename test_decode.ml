@@ -8,7 +8,7 @@ let load_file f =
   close_in ic;
   (s)
 
-let filename = "./lzma_test.txt.lzma"
+let filename = "./test_data.txt.lzma"
 
 let buf_len = 16384
 

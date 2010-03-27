@@ -8,7 +8,7 @@ let load_file f =
   close_in ic;
   (s)
 
-let filename = "./lzma_test.txt"
+let filename = "./test_data.txt"
 
 let () =
   let data = load_file filename in
