@@ -80,7 +80,7 @@ DIST_FILES=           \
     lzma.cmo          \
     lzma.cmx          \
     lzma.cmxa         \
-    lzma.mli          \
+    lzma.ml           \
 #EOL
 SO_DIST_FILES=        \
     dlllzma_stubs.so  \
