@@ -18,6 +18,9 @@
 
 #include <lzma.h>
 
+#define Val_none Val_int(0)
+#define Some_val(v) Field(v,0)
+
 static struct custom_operations lzma_stream_custom_ops = {
     identifier: "lzma_stream custom_operations",
     finalize:    custom_finalize_default,
@@ -198,11 +201,11 @@ CAMLprim value caml_lzma_stream_buffer_bound(value uncompressed_size) {
 
 CAMLprim value caml_lzma_easy_buffer_encode_native(
         value level,
-	value preset,
-	value check,
-	value in,
-	value out,
-	value ml_out_pos)
+        value preset,
+        value check,
+        value in,
+        value out,
+        value ml_out_pos)
 {
     size_t out_pos = Long_val(ml_out_pos);
     lzma_ret st = lzma_easy_buffer_encode(
@@ -242,11 +245,11 @@ Decoder_flags_val(value mask_list) {
 
 CAMLprim value caml_lzma_stream_buffer_decode_native(
         value ml_memlimit,
-	value flags,
-	value in,
+        value flags,
+        value in,
         value ml_in_pos,
-	value out,
-	value ml_out_pos)
+        value out,
+        value ml_out_pos)
 {
     CAMLparam5(ml_memlimit, flags, in, ml_in_pos, out);
     CAMLxparam1(ml_out_pos);
@@ -266,7 +269,7 @@ CAMLprim value caml_lzma_stream_buffer_decode_native(
         case LZMA_NO_CHECK: caml_failwith("lzma_stream_buffer_decode: no check");
         case LZMA_UNSUPPORTED_CHECK: caml_failwith("lzma_stream_buffer_decode: unsupported check");
         case LZMA_MEM_ERROR: caml_failwith("lzma_stream_buffer_decode: mem error");
-	case LZMA_MEMLIMIT_ERROR: caml_raise_with_arg(*caml_named_value("exn_lzma_memlimit"),
+        case LZMA_MEMLIMIT_ERROR: caml_raise_with_arg(*caml_named_value("exn_lzma_memlimit"),
                                                        caml_copy_int64(memlimit));
         case LZMA_BUF_ERROR: caml_failwith("lzma_stream_buffer_decode: output buffer was too small");
         case LZMA_PROG_ERROR: caml_failwith("lzma_stream_buffer_decode: prog error");
@@ -327,5 +330,56 @@ CAMLprim value caml_lzma_version_string(value kind)
         ret = caml_copy_string(LZMA_VERSION_STRING);
     }
     CAMLreturn(ret);
+}
+
+/* Integrity Check */
+
+CAMLprim value caml_lzma_check_is_supported(value check)
+{
+    lzma_bool b = lzma_check_is_supported(Lzma_check_val(check));
+    return Val_bool(b);
+}
+
+CAMLprim value caml_lzma_check_size(value check)
+{
+    uint32_t size = lzma_check_size(Lzma_check_val(check));
+    if (size == UINT32_MAX) caml_invalid_argument("lzma_check_size");
+    return Val_long(size);
+}
+
+CAMLprim value caml_lzma_check_size_max(value unit)
+{
+    return Val_long(LZMA_CHECK_SIZE_MAX);
+}
+
+CAMLprim value caml_lzma_crc32(value prev_crc, value buf)
+{
+    uint32_t crc;
+    if (prev_crc == Val_none) crc = 0;
+    else crc = Int32_val(Some_val(prev_crc));
+    uint32_t ret = lzma_crc32(Conv_string(buf), caml_string_length(buf), crc);
+    return caml_copy_int32(ret);
+}
+
+CAMLprim value caml_lzma_crc64(value prev_crc, value buf)
+{
+    uint64_t crc;
+    if (prev_crc == Val_none) crc = 0;
+    else crc = Int64_val(Some_val(prev_crc));
+    uint64_t ret = lzma_crc64(Conv_string(buf), caml_string_length(buf), crc);
+    return caml_copy_int64(ret);
+}
+
+CAMLprim value caml_lzma_get_check(value strm)
+{
+    lzma_check check = lzma_get_check(Lzma_stream_val(strm));
+    switch (check) {
+        case LZMA_CHECK_NONE:   return Val_int(0);
+        case LZMA_CHECK_CRC32:  return Val_int(1);
+        case LZMA_CHECK_CRC64:  return Val_int(2);
+        case LZMA_CHECK_SHA256: return Val_int(3);
+    }
+    caml_failwith("lzma_get_check: unrecognised return value");
+    return Val_int(0);
 }
 

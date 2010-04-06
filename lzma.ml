@@ -26,9 +26,11 @@ external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64 = "lzma_str
 (** total number of bytes read/written by liblzma *)
 
 
-(** {3 Type of the integrity check (Check ID)} *)
+(** {3 Integrity Check} *)
+
+(** Type of the integrity check (Check ID)
   
-(** The .xz format supports multiple types of checks that are calculated from
+    The .xz format supports multiple types of checks that are calculated from
     the uncompressed data. They vary in both speed and ability to detect errors.
 *)
 type lzma_check =
@@ -42,6 +44,16 @@ type lzma_check =
         (Size of the Check field: 8 bytes) *)
   | LZMA_CHECK_SHA256
     (** SHA-256 (Size of the Check field: 32 bytes) *)
+
+
+external lzma_check_is_supported: check:lzma_check -> bool = "caml_lzma_check_is_supported"
+external lzma_check_size: check:lzma_check -> int = "caml_lzma_check_size"
+external lzma_check_size_max: unit -> int = "caml_lzma_check_size_max"
+
+external lzma_crc32: ?crc:int32 -> string -> int32 = "caml_lzma_crc32"
+external lzma_crc64: ?crc:int64 -> string -> int64 = "caml_lzma_crc64"
+
+external lzma_get_check: strm:lzma_stream -> lzma_check  = "caml_lzma_get_check"
 
 
 (** {3 Initialise for decoding} *)
