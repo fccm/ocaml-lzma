@@ -383,3 +383,27 @@ CAMLprim value caml_lzma_get_check(value strm)
     return Val_int(0);
 }
 
+/* memory management */
+
+CAMLprim value caml_lzma_memusage(value strm)
+{
+    uint64_t ret = lzma_memusage(Lzma_stream_val(strm));
+    return caml_copy_int64(ret);
+}
+
+CAMLprim value caml_lzma_memlimit_get(value strm)
+{
+    uint64_t ret = lzma_memlimit_get(Lzma_stream_val(strm));
+    return caml_copy_int64(ret);
+}
+
+CAMLprim value caml_lzma_memlimit_set(value strm, value memlimit)
+{
+    lzma_ret st = lzma_memlimit_set(Lzma_stream_val(strm), Int64_val(memlimit));
+    if (st != LZMA_OK) {
+      if (st == LZMA_MEMLIMIT_ERROR) caml_failwith("lzma_memlimit_set: the new limit is too small");
+      if (st == LZMA_PROG_ERROR) caml_invalid_argument("lzma_memlimit_set");
+    }
+    return Val_unit;
+}
+

@@ -128,6 +128,13 @@ external lzma_stream_buffer_decode: memlimit:int64 ->
     returns (in_pos, out_pos) *)
 
 
+(** {3 Memory Management} *)
+
+external lzma_memusage: strm:lzma_stream -> int64 = "caml_lzma_memusage"
+external lzma_memlimit_get: strm:lzma_stream -> int64 = "caml_lzma_memlimit_get"
+external lzma_memlimit_set: strm:lzma_stream -> memlimit:int64 -> unit = "caml_lzma_memlimit_set"
+
+
 (** {3 Version} *)
 
 type stability =
