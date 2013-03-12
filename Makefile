@@ -13,6 +13,8 @@ LZMA_DIR := lzma
 INC_DIR := /usr/include
 LIB_DIR := /usr/lib
 LZMA_INC := -I$(INC_DIR)
+LINK_DIR := -L$(LIB_DIR)
+LZMA_LINK := $(LINK_DIR) $(LZMA_LIBS)
 PREFIX := $(OCAML_PATH)/$(LZMA_DIR)
 SO_PREFIX := $(PREFIX)
 #SO_PREFIX := $(OCAML_PATH)/stublibs/
@@ -41,13 +43,13 @@ lzma_stubs.o: lzma_stubs.c
 	$(OCAMLC) -c -ccopt "$(LZMA_INC)" $<
 
 liblzma_stubs.a: lzma_stubs.o
-	$(OCAMLMKLIB) -oc lzma_stubs $< $(LZMA_LIBS)
+	$(OCAMLMKLIB) -oc lzma_stubs $< $(LZMA_LINK)
 
 lzma.cmxa lzma.a: lzma.cmx liblzma_stubs.a
-	$(OCAMLMKLIB) -o lzma $< -L. $(LZMA_LIBS) -ccopt -llzma_stubs
+	$(OCAMLMKLIB) -o lzma -ccopt '"$(LZMA_LINK)"' -L. -llzma_stubs $<
 
 lzma.cma: lzma.cmo liblzma_stubs.a
-	$(OCAMLC) -a -o $@ -ccopt $(LZMA_LIBS) -dllib -llzma_stubs $<
+	$(OCAMLC) -a -o $@ -ccopt "$(LZMA_LINK)" -dllib -llzma_stubs $<
 
 lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
