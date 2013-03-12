@@ -13,11 +13,12 @@ let filename = "./test_data.txt.lzma"
 let buf_len = 16384
 
 let () =
-  Lzma.init();
+  Lzma.init ();
   let data = load_file filename in
   let data_len = String.length data in
-  let strm = new_lzma_stream() in
-  lzma_auto_decoder ~strm ~check:LZMA_CHECK_NONE ~memlimit:536_870_912L;  (* 512 * 1024 * 1024 *)
+  let strm = new_lzma_stream () in
+  let memlimit = 268_435_456L in  (* 256 * 1024 * 1024 *)
+  lzma_auto_decoder ~strm ~check:LZMA_CHECK_NONE ~memlimit;
   let buf = String.create buf_len in
   let ofs = ref 0 in
   begin
