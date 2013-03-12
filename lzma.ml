@@ -10,6 +10,8 @@
 *)
 
 exception EOF of int
+(** end of file reached, but still [n] chars available in the buffer *)
+
 exception MEM_LIMIT of int64
 (** memory usage limit was reached, the minimum required mem-limit value is returned *)
 
