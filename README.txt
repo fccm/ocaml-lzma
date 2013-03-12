@@ -1,5 +1,7 @@
 OCaml bindings for the lzma library.
 
+For a quick overview of what lzma is, read the file "description.txt".
+
 This library is provided under the terms of the MIT license.
 See the file LICENSE.txt for more details.
 
