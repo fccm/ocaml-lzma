@@ -85,15 +85,23 @@ DIST_FILES=           \
 #EOL
 SO_DIST_FILES=        \
     dlllzma_stubs.so  \
+#EOL
+PLUG_DIST_FILES=      \
     lzma.cmxs         \
 #EOL
 
+INSTALL_DIR := install -d
+INSTALL_FILE := install -m 0644
+INSTALL_EXE := install -m 0755
+
 .PHONY: install uninstall
 install: $(DIST_FILES)  $(SO_DIST_FILES) META
-	if [ ! -d $(PREFIX) ]; then install -d $(PREFIX) ; fi
-	for file in $(DIST_FILES);    do if [ -f $$file ]; then install -m 0644 $$file $(PREFIX)/; fi; done
-	for file in $(SO_DIST_FILES); do if [ -f $$file ]; then install -m 0755 $$file $(SO_PREFIX)/; fi; done
-	install -m 0644 META $(PREFIX)/
+	if [ ! -d $(PREFIX) ]; then $(INSTALL_DIR) $(PREFIX) ; fi
+	for file in $(DIST_FILES);      do if [ -f $$file ]; then $(INSTALL_FILE) $$file $(PREFIX)/; fi; done
+	for file in $(SO_DIST_FILES);   do if [ -f $$file ]; then $(INSTALL_EXE)  $$file $(SO_PREFIX)/; fi; done
+	for file in $(PLUG_DIST_FILES); do if [ -f $$file ]; then $(INSTALL_EXE)  $$file $(PREFIX)/; fi; done
+	$(INSTALL_FILE) META $(PREFIX)/
+
 uninstall:
 	$(RM) $(PREFIX)/*
 	$(RMDIR) $(PREFIX)/
