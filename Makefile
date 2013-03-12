@@ -1,7 +1,7 @@
 #  Copyright (C) 2010  Florent Monnier
 #  Contact:  <fmonnier(AT-SIGN)linux-nantes(DOT-ORG)>
-#  This file is distributed under the terms of the GNU Lesser General Public
-#  License, with the special exception on linking described in file LICENSE.txt
+#  This file is distributed under the terms of the MIT license.
+#  See the file LICENSE.txt for more details.
 
 OCAMLC := ocamlc.opt -g
 OCAMLOPT := ocamlopt.opt -g
