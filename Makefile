@@ -14,6 +14,7 @@ PREFIX := $(OCAML_PATH)/$(LZMA_DIR)
 SO_PREFIX := $(PREFIX)
 #SO_PREFIX := $(OCAML_PATH)/stublibs/
 DOC_DIR := doc
+RMDIR := rmdir
 
 all: cma cmxa cmxs
 byte cma: lzma.cma
@@ -94,15 +95,18 @@ install: $(DIST_FILES)  $(SO_DIST_FILES) META
 	for file in $(SO_DIST_FILES); do if [ -f $$file ]; then install -m 0755 $$file $(SO_PREFIX)/; fi; done
 	install -m 0644 META $(PREFIX)/
 uninstall:
-	rm $(PREFIX)/*
-	rmdir $(PREFIX)/
+	$(RM) $(PREFIX)/*
+	$(RMDIR) $(PREFIX)/
 
-.PHONY: clean cleanmli cleandoc
+.PHONY: clean cleaner cleanmli cleandoc cleanall
 clean:
-	rm -f *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+	$(RM) *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+cleaner:
+	$(RM) *~
 cleanmli:
-	rm -f lzma.mli
+	$(RM) lzma.mli
 cleandoc:
-	rm -f $(DOC_DIR)/*
-	rmdir $(DOC_DIR)
+	$(RM) $(DOC_DIR)/*
+	$(RMDIR) $(DOC_DIR)
 
+cleanall: clean cleaner cleanmli cleandoc
