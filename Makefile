@@ -3,10 +3,10 @@
 #  This file is distributed under the terms of the MIT license.
 #  See the file LICENSE.txt for more details.
 
-OCAMLC := ocamlc.opt -g
-OCAMLOPT := ocamlopt.opt -g
+OCAMLC := ocamlc -g
+OCAMLOPT := ocamlopt -g
 OCAMLMKLIB := ocamlmklib
-OCAMLDOC := ocamldoc.opt
+OCAMLDOC := ocamldoc
 OCAML_PATH := $(shell ocamlc -where)
 LZMA_LIBS := -llzma
 LZMA_DIR := lzma
