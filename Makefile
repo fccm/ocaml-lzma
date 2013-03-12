@@ -10,6 +10,8 @@ OCAMLDOC := ocamldoc
 OCAML_PATH := $(shell ocamlc -where)
 LZMA_LIBS := -llzma
 LZMA_DIR := lzma
+INC_DIR := /usr/include
+LZMA_INC := -I$(INC_DIR)
 PREFIX := $(OCAML_PATH)/$(LZMA_DIR)
 SO_PREFIX := $(PREFIX)
 #SO_PREFIX := $(OCAML_PATH)/stublibs/
@@ -35,7 +37,7 @@ lzma.cmo: lzma.ml lzma.cmi
 	$(OCAMLC) -c $<
 
 lzma_stubs.o: lzma_stubs.c
-	$(OCAMLC) -c $<
+	$(OCAMLC) -c -ccopt "$(LZMA_INC)" $<
 
 dlllzma_stubs.so liblzma_stubs.a: lzma_stubs.o
 	$(OCAMLMKLIB) -oc lzma_stubs $< $(LZMA_LIBS)
