@@ -100,7 +100,7 @@ uninstall:
 
 .PHONY: clean cleaner cleanmli cleandoc cleanall
 clean:
-	$(RM) *.[oa] *.cm[ioxa] *.{so,cmxa,cmxs} *.{opt,byte}
+	$(RM) *.[oa] *.cm[ioxa] *.so *.dll *.cmx[as] *.exe *.opt *.byte
 cleaner:
 	$(RM) *~
 cleanmli:
