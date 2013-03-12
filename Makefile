@@ -49,6 +49,7 @@ lzma.cma: lzma.cmo  dlllzma_stubs.so
 lzma.cmxs: lzma.cmxa
 	$(OCAMLOPT) -shared -linkall -o $@ $<
 
+.PHONY: doc
 doc: lzma.ml lzma.cmi
 	mkdir -p $(DOC_DIR)
 	$(OCAMLDOC) lzma.ml -colorize-code -html -d $(DOC_DIR)
@@ -58,7 +59,7 @@ EDITOR := vim
 edit:
 	$(EDITOR) lzma.ml lzma_stubs.c
 
-.PHONY: doc test test_opt test_byte
+.PHONY: test test_opt test_byte
 
 test: test_decode.ml lzma.cma
 	ocaml -I . lzma.cma $<
