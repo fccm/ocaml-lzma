@@ -53,9 +53,12 @@ doc: lzma.ml lzma.cmi
 	mkdir -p $(DOC_DIR)
 	$(OCAMLDOC) lzma.ml -colorize-code -html -d $(DOC_DIR)
 
-vim:
-	vim lzma.ml lzma_stubs.c
-.PHONY: doc vim test test_opt test_byte
+EDITOR := vim
+.PHONY: edit
+edit:
+	$(EDITOR) lzma.ml lzma_stubs.c
+
+.PHONY: doc test test_opt test_byte
 
 test: test_decode.ml lzma.cma
 	ocaml -I . lzma.cma $<
