@@ -156,6 +156,10 @@ CAMLprim value caml_lzma_auto_decoder(value strm, value memlimit, value ml_check
     return Val_unit;
 }
 
+#if !defined(LZMA_PRESET_TEXT)
+  #define LZMA_PRESET_TEXT 0
+#endif
+
 static const uint32_t lzma_preset_table[] = {
     LZMA_PRESET_DEFAULT,
     LZMA_PRESET_EXTREME,
