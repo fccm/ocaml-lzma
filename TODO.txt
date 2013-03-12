@@ -1,0 +1,17 @@
+
+(** {3 Interoperability} *)
+(** http://www.ocaml-programming.de/rec/IO-Classes.html *)
+
+class type in_channel =
+  object
+    method input : string -> int -> int -> int
+    method close_in : unit -> unit
+  end
+
+class type out_channel =
+  object
+    method output : string -> int -> int -> int
+    method flush : unit -> unit
+    method close_out : unit -> unit
+  end
+
