@@ -13,7 +13,8 @@ exception EOF of int
 (** end of file reached, but still [n] chars available in the buffer *)
 
 exception MEM_LIMIT of int64
-(** memory usage limit was reached, the minimum required mem-limit value is returned *)
+(** memory usage limit was reached,
+    the minimum required mem-limit value is returned *)
 
 let init () =
   Callback.register_exception "exn_lzma_eof" (EOF 0);
@@ -22,9 +23,11 @@ let init () =
 let () = init ()
 
 type lzma_stream
+
 external new_lzma_stream: unit -> lzma_stream = "new_lzma_stream"
 
-external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64 = "lzma_stream_total_in_out"
+external lzma_stream_total_in_out: strm:lzma_stream -> int64 * int64
+  = "lzma_stream_total_in_out"
 (** total number of bytes read/written by liblzma *)
 
 
@@ -48,7 +51,8 @@ type lzma_check =
     (** SHA-256 (Size of the Check field: 32 bytes) *)
 
 
-external lzma_check_is_supported: check:lzma_check -> bool = "caml_lzma_check_is_supported"
+external lzma_check_is_supported: check:lzma_check -> bool
+  = "caml_lzma_check_is_supported"
 external lzma_check_size: check:lzma_check -> int = "caml_lzma_check_size"
 external lzma_check_size_max: unit -> int = "caml_lzma_check_size_max"
 
@@ -71,14 +75,22 @@ type lzma_preset =
   | LZMA_PRESET_EXTREME
   | LZMA_PRESET_TEXT
 
-external lzma_easy_encoder: strm:lzma_stream -> level:int -> preset:lzma_preset list ->
-  check:lzma_check -> unit = "caml_lzma_easy_encoder"
+external lzma_easy_encoder:
+  strm:lzma_stream -> level:int -> preset:lzma_preset list ->
+  check:lzma_check -> unit
+  = "caml_lzma_easy_encoder"
 (** initialise .xz stream encoder *)
 
 type lzma_options
 external new_lzma_options: unit -> lzma_options = "new_lzma_options_lzma"
-external lzma_preset: options:lzma_options -> level:int -> preset_extreme:bool -> unit = "caml_lzma_lzma_preset"
-external lzma_alone_encoder: strm:lzma_stream -> options:lzma_options -> unit = "caml_lzma_alone_encoder"
+
+external lzma_preset:
+  options:lzma_options -> level:int -> preset_extreme:bool -> unit
+  = "caml_lzma_lzma_preset"
+
+external lzma_alone_encoder:
+  strm:lzma_stream -> options:lzma_options -> unit
+  = "caml_lzma_alone_encoder"
 (** initialise .lzma stream encoder *)
 
 
@@ -97,15 +109,18 @@ external lzma_code: strm:lzma_stream -> action:lzma_action ->
     "caml_lzma_code_native"
 (** returns (avail_in, avail_out) *)
 
+
 (** {3 Ending} *)
 
-(* XXX maybe lzma_end could be a finaliser of the lzma_stream value, TODO investigate *)
+(* XXX maybe lzma_end could be a finaliser of the lzma_stream value,
+   TODO investigate *)
 external lzma_end: strm:lzma_stream -> unit = "caml_lzma_end"
 
 
 (** {3 Single-call} *)
 
-external lzma_stream_buffer_bound: uncompressed_size:int -> int = "caml_lzma_stream_buffer_bound"
+external lzma_stream_buffer_bound: uncompressed_size:int -> int
+  = "caml_lzma_stream_buffer_bound"
 (** Calculate output buffer size for single-call Stream encoder *)
 
 external lzma_easy_buffer_encode:
@@ -134,7 +149,8 @@ external lzma_stream_buffer_decode: memlimit:int64 ->
 
 external lzma_memusage: strm:lzma_stream -> int64 = "caml_lzma_memusage"
 external lzma_memlimit_get: strm:lzma_stream -> int64 = "caml_lzma_memlimit_get"
-external lzma_memlimit_set: strm:lzma_stream -> memlimit:int64 -> unit = "caml_lzma_memlimit_set"
+external lzma_memlimit_set: strm:lzma_stream -> memlimit:int64 -> unit
+  = "caml_lzma_memlimit_set"
 
 
 (** {3 Version} *)
@@ -148,7 +164,9 @@ type version_kind =
   | Run_time
   | Compile_time
 
-external lzma_version_number: version_kind -> int * int * int * stability = "caml_lzma_version_number"
+external lzma_version_number: version_kind -> int * int * int * stability
+  = "caml_lzma_version_number"
 
-external lzma_version_string: version_kind -> string = "caml_lzma_version_string"
+external lzma_version_string: version_kind -> string
+  = "caml_lzma_version_string"
 
