@@ -11,6 +11,7 @@ OCAML_PATH := $(shell $(OCAMLC) -where)
 LZMA_LIBS := -llzma
 LZMA_DIR := lzma
 INC_DIR := /usr/include
+LIB_DIR := /usr/lib
 LZMA_INC := -I$(INC_DIR)
 PREFIX := $(OCAML_PATH)/$(LZMA_DIR)
 SO_PREFIX := $(PREFIX)
@@ -39,13 +40,13 @@ lzma.cmo: lzma.ml lzma.cmi
 lzma_stubs.o: lzma_stubs.c
 	$(OCAMLC) -c -ccopt "$(LZMA_INC)" $<
 
-dlllzma_stubs.so liblzma_stubs.a: lzma_stubs.o
+liblzma_stubs.a: lzma_stubs.o
 	$(OCAMLMKLIB) -oc lzma_stubs $< $(LZMA_LIBS)
 
-lzma.cmxa lzma.a: lzma.cmx dlllzma_stubs.so
+lzma.cmxa lzma.a: lzma.cmx liblzma_stubs.a
 	$(OCAMLMKLIB) -o lzma $< -L. $(LZMA_LIBS) -ccopt -llzma_stubs
 
-lzma.cma: lzma.cmo  dlllzma_stubs.so
+lzma.cma: lzma.cmo liblzma_stubs.a
 	$(OCAMLC) -a -o $@ -ccopt $(LZMA_LIBS) -dllib -llzma_stubs $<
 
 lzma.cmxs: lzma.cmxa
@@ -90,7 +91,7 @@ DIST_FILES=           \
     lzma.ml           \
 #EOL
 SO_DIST_FILES=        \
-    dlllzma_stubs.so  \
+    dlllzma_stubs.*   \
 #EOL
 PLUG_DIST_FILES=      \
     lzma.cmxs         \
