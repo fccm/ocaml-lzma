@@ -64,23 +64,6 @@ EDITOR := vim
 edit:
 	$(EDITOR) lzma.ml lzma_stubs.c
 
-.PHONY: test test_opt test_byte
-
-test: test_decode.ml lzma.cma
-	ocaml -I . lzma.cma $<
-
-test_opt: test_decode.opt
-	./$<
-
-test_byte: test_decode.byte
-	ocamlrun -I . $<
-
-test_decode.byte: test_decode.ml lzma.cma
-	$(OCAMLC) -o $@ -I . lzma.cma $<
-
-test_decode.opt: test_decode.ml lzma.cmxa
-	$(OCAMLOPT) -o $@ -I . lzma.cmxa $<
-
 DIST_FILES=           \
     liblzma_stubs.a   \
     lzma.a            \
