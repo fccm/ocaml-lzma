@@ -7,4 +7,3 @@ See the file LICENSE.txt for more details.
 
 You should install liblzma-devel in order to compile these bindings.
 
-Contact:  <fmonnier(AT-SIGN)linux-nantes(DOT-ORG)>

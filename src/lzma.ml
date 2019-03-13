@@ -1,6 +1,5 @@
 (** OCaml bindings to the lzma library *)
 (* Copyright (C) 2010  Florent Monnier
-   Contact:  <fmonnier(AT-SIGN)linux-nantes(DOT-ORG)>
    This file is distributed under the terms of the MIT license.
    See the file LICENSE.txt for more details.
 *)
