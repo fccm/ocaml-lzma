@@ -56,8 +56,8 @@ external lzma_check_is_supported: check:lzma_check -> bool
 external lzma_check_size: check:lzma_check -> int = "caml_lzma_check_size"
 external lzma_check_size_max: unit -> int = "caml_lzma_check_size_max"
 
-external lzma_crc32: ?crc:int32 -> string -> int32 = "caml_lzma_crc32"
-external lzma_crc64: ?crc:int64 -> string -> int64 = "caml_lzma_crc64"
+external lzma_crc32: ?crc:int32 -> bytes -> int32 = "caml_lzma_crc32"
+external lzma_crc64: ?crc:int64 -> bytes -> int64 = "caml_lzma_crc64"
 
 external lzma_get_check: strm:lzma_stream -> lzma_check  = "caml_lzma_get_check"
 
@@ -103,7 +103,7 @@ type lzma_action =
   | LZMA_FINISH
 
 external lzma_code: strm:lzma_stream -> action:lzma_action ->
-  next_in:string -> next_out:string ->
+  next_in:bytes -> next_out:bytes ->
   ofs_in:int -> ofs_out:int -> int * int
   = "caml_lzma_code_bytecode"
     "caml_lzma_code_native"
@@ -125,7 +125,7 @@ external lzma_stream_buffer_bound: uncompressed_size:int -> int
 
 external lzma_easy_buffer_encode:
   level:int -> preset:lzma_preset list -> check:lzma_check ->
-  data:string -> buf:string -> ofs:int -> int
+  data:bytes -> buf:bytes -> ofs:int -> int
   = "caml_lzma_easy_buffer_encode_bytecode"
     "caml_lzma_easy_buffer_encode_native"
 (** single-call .xz stream encoding *)
@@ -136,8 +136,8 @@ type decoder_flags =
   | LZMA_CONCATENATED
 
 external lzma_stream_buffer_decode: memlimit:int64 ->
-  flags:decoder_flags list -> data:string -> data_ofs:int ->
-  buf:string -> buf_ofs:int ->
+  flags:decoder_flags list -> data:bytes -> data_ofs:int ->
+  buf:bytes -> buf_ofs:int ->
   int * int
   = "caml_lzma_stream_buffer_decode_bytecode"
     "caml_lzma_stream_buffer_decode_native"

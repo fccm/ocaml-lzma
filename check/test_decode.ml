@@ -3,7 +3,7 @@ open Lzma
 let load_file f =
   let ic = open_in_bin f in
   let n = in_channel_length ic in
-  let s = String.create n in
+  let s = Bytes.create n in
   really_input ic s 0 n;
   close_in ic;
   (s)
@@ -15,11 +15,11 @@ let buf_len = 16384
 let () =
   Lzma.init ();
   let data = load_file filename in
-  let data_len = String.length data in
+  let data_len = Bytes.length data in
   let strm = new_lzma_stream () in
   let memlimit = 268_435_456L in  (* 256 * 1024 * 1024 *)
   lzma_auto_decoder ~strm ~check:LZMA_CHECK_NONE ~memlimit;
-  let buf = String.create buf_len in
+  let buf = Bytes.create buf_len in
   let ofs = ref 0 in
   begin
     try
@@ -31,11 +31,11 @@ let () =
                     ~ofs_out:0
         in
         ofs := data_len - avail_in;
-        print_string buf;
+        print_bytes buf;
       done
     with EOF n ->
-      let str_end = String.sub buf 0 (buf_len - n) in
-      print_string str_end;
+      let str_end = Bytes.sub buf 0 (buf_len - n) in
+      print_bytes str_end;
       lzma_end ~strm;
   end;
 ;;
