@@ -6,6 +6,7 @@ OCAMLC := ocamlc -g
 OCAMLOPT := ocamlopt -g
 OCAMLMKLIB := ocamlmklib
 OCAMLDOC := ocamldoc
+OCAMLFIND := ocamlfind
 OCAML_PATH := $(shell $(OCAMLC) -where)
 LZMA_LIBS := -llzma
 LZMA_DIR := lzma
@@ -96,6 +97,10 @@ install: $(DIST_FILES)  $(SO_DIST_FILES) META
 uninstall:
 	$(RM) $(PREFIX)/*
 	$(RMDIR) $(PREFIX)/
+
+.PHONY: findinstall
+findinstall:
+	$(OCAMLFIND) install lzma META *.cma *.cmxa *.cmxs *.cmi *.cmx *.mli *.so *.a
 
 .PHONY: clean cleaner cleanmli cleandoc cleanall
 clean:
