@@ -1,0 +1,32 @@
+opam-version: "2.0"
+name: "lzma"
+authors: "Florent Monnier"
+maintainer: "monnier.florent@gmail.com"
+license: "MIT"
+
+homepage: "https://github.com/fccm/ocaml-lzma"
+bug-reports: "https://github.com/fccm/ocaml-lzma/issues"
+dev-repo: "git+https://github.com/fccm/ocaml-lzma.git"
+doc: "http://decapode314.free.fr/ocaml/lzma/doc/"
+
+tags: [ "bindings" "compression" "decompression" ]
+synopsis: "Bindings for the Lzma library"
+description: """
+Bindings for the Lzma library.
+
+Lzma provides very high compression ratio and fast decompression.
+"""
+depends: [
+  "ocaml"
+  "ocamlfind" {build}
+]
+depexts: [
+  ["liblzma-dev"] {os-family = "debian"}
+  ["liblzma-devel"] {os-distribution = "mageia"}
+]
+build: [
+  [make "-C" "src"]
+]
+install: [
+  [make "-C" "src" "findinstall"]
+]
